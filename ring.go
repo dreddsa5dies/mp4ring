@@ -12,9 +12,14 @@ import (
 )
 
 var (
-	errSize     = errors.New("size must be positive")
-	errBufClose = errors.New("ring buffer is closed")
-	errBufNil   = errors.New("ring buffer is nil")
+	//ErrSize - size must be positive
+	ErrSize = errors.New("size must be positive")
+
+	// ErrBufClose - ring buffer is closed
+	ErrBufClose = errors.New("buffer is closed")
+
+	// ErrBufNil - ring buffer is nil
+	ErrBufNil = errors.New("buffer is nil")
 )
 
 // Buffer implements a cyclic buffer. Has a fixed size,
@@ -29,14 +34,14 @@ type Buffer struct {
 	isClosed bool // closing flag
 }
 
-// boxHeader - header representation
+// header representation
 type boxHeader struct {
 	Size       uint32
 	FourccType [4]byte
 	Size64     uint64
 }
 
-// getHeaderBoxInfo - getting header information
+// getting header information
 func getHeaderBoxInfo(data []byte) (boxHeader boxHeader) {
 	buf := bytes.NewBuffer(data)
 
@@ -45,7 +50,7 @@ func getHeaderBoxInfo(data []byte) (boxHeader boxHeader) {
 	return
 }
 
-// getFourccType - header type
+// get header type
 func getFourccType(boxHeader boxHeader) string {
 	return string(boxHeader.FourccType[:])
 }
@@ -53,7 +58,7 @@ func getFourccType(boxHeader boxHeader) string {
 // New creates a new buffer of the specified size. The size must be greater than 0
 func New(size int) (*Buffer, error) {
 	if size <= 0 {
-		return nil, errSize
+		return nil, ErrSize
 	}
 
 	return &Buffer{
@@ -66,7 +71,7 @@ func New(size int) (*Buffer, error) {
 // Close closing the buffer
 func (b *Buffer) Close() error {
 	if b == nil {
-		return errBufNil
+		return ErrBufNil
 	}
 
 	b.isClosed = true
@@ -77,7 +82,7 @@ func (b *Buffer) Close() error {
 // Write writes headers and up to N atoms to the inner ring, overwriting older data if necessary
 func (b *Buffer) Write(buf []byte) (int, error) {
 	if b.isClosed { // to unsubscribe, you need to return an error
-		return 0, errBufClose
+		return 0, ErrBufClose
 	}
 
 	// Total number of bytes written

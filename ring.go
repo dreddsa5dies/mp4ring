@@ -36,23 +36,19 @@ type Buffer struct {
 
 // header representation
 type boxHeader struct {
-	Size       uint32
+	Size       uint
 	FourccType [4]byte
-	Size64     uint64
 }
 
 // getting header information
-func getHeaderBoxInfo(data []byte) (boxHeader boxHeader, err error) {
+func getHeaderBoxInfo(data []byte) (boxHeader, error) {
 	buf := bytes.NewBuffer(data)
 
-	err = binary.Read(buf, binary.BigEndian, &boxHeader)
+	var box boxHeader
 
-	return
-}
+	err := binary.Read(buf, binary.BigEndian, &box)
 
-// get header type
-func getFourccType(boxHeader boxHeader) string {
-	return string(boxHeader.FourccType[:])
+	return box, err
 }
 
 // New creates a new buffer of the specified size. The size must be greater than 0
@@ -94,7 +90,8 @@ func (b *Buffer) Write(buf []byte) (int, error) {
 		return 0, err
 	}
 
-	fourccType := getFourccType(bHead)
+	// get header type
+	fourccType := string(bHead.FourccType[:])
 
 	switch fourccType {
 	case `ftyp`:

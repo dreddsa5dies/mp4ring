@@ -35,28 +35,6 @@ func Test_getHeaderBoxInfo(t *testing.T) {
 	}
 }
 
-func Test_getFourccType(t *testing.T) {
-	type args struct {
-		boxHeader boxHeader
-	}
-	tests := []struct {
-		name string
-		args args
-		want string
-	}{
-		{"ftyp", args{boxHeader{FourccType: [4]byte{102, 116, 121, 112}}}, "ftyp"},
-		{"moov", args{boxHeader{FourccType: [4]byte{109, 111, 111, 118}}}, "moov"},
-		{"default", args{boxHeader{FourccType: [4]byte{48, 48, 48, 48}}}, "0000"},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := getFourccType(tt.args.boxHeader); got != tt.want {
-				t.Errorf("getFourccType() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
 func TestNew(t *testing.T) {
 	type args struct {
 		size int

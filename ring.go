@@ -34,9 +34,9 @@ type Buffer struct {
 	isClosed bool // closing flag
 }
 
-// header representation
+// header representation (https://docs.fileformat.com/video/mp4/#structure-of-mp4-files)
 type boxHeader struct {
-	Size       uint
+	Size       uint32
 	FourccType [4]byte
 }
 

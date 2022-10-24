@@ -42,10 +42,10 @@ type boxHeader struct {
 }
 
 // getting header information
-func getHeaderBoxInfo(data []byte) (boxHeader boxHeader) {
+func getHeaderBoxInfo(data []byte) (boxHeader boxHeader, err error) {
 	buf := bytes.NewBuffer(data)
 
-	binary.Read(buf, binary.BigEndian, &boxHeader)
+	err = binary.Read(buf, binary.BigEndian, &boxHeader)
 
 	return
 }
@@ -89,7 +89,11 @@ func (b *Buffer) Write(buf []byte) (int, error) {
 	var n int
 
 	// Separately store the header, which is easy to determine - each atom has a name. And the name of the header atoms is ftyp and moov. It is enough to watch the first 4 bytes of the stream, if there is an ftp, then this is the header and you need to save it
-	bHead := getHeaderBoxInfo(buf)
+	bHead, err := getHeaderBoxInfo(buf)
+	if err != nil {
+		return 0, err
+	}
+
 	fourccType := getFourccType(bHead)
 
 	switch fourccType {

@@ -28,7 +28,7 @@ Processed 47143 bytes, 0.047 megabytes (SI)
 Use [Go Modules](https://blog.golang.org/using-go-modules).
 
 ## License
-This project is licensed under GPLv3 license. Please read the [LICENSE](https://img.shields.io/github/license/dreddsa5dies/mp4ring) file.  
+Please read the [LICENSE](https://img.shields.io/github/license/dreddsa5dies/mp4ring) file.  
 
 ## Contribute
 The project is used to publish an article, but I am always happy to receive any help.

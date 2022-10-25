@@ -4,22 +4,23 @@
 Cyclic buffer for fragmented mp4 stream in order to save memory when pre-recording an event.
 Does not use FFmpeg, suitable for embedded systems.
 
-## [SCC](https://github.com/boyter/scc)
+## [scc](https://github.com/boyter/scc)
 ```
 ───────────────────────────────────────────────────────────────────────────────
 Language                 Files     Lines   Blanks  Comments     Code Complexity
 ───────────────────────────────────────────────────────────────────────────────
-Markdown                     2        15        6         0        9          0
-Go                           1       142       28        20       94          7
+Go                           2       364       45        24      295         36
 License                      1       674      121         0      553          0
+Markdown                     1        33        5         0       28          0
+gitignore                    1         2        0         0        2          0
 ───────────────────────────────────────────────────────────────────────────────
-Total                        4       831      155        20      656          7
+Total                        5      1073      171        24      878         36
 ───────────────────────────────────────────────────────────────────────────────
-Estimated Cost to Develop (organic) $17,351
-Estimated Schedule Effort (organic) 2.95 months
-Estimated People Required (organic) 0.52
+Estimated Cost to Develop (organic) $23,564
+Estimated Schedule Effort (organic) 3.31 months
+Estimated People Required (organic) 0.63
 ───────────────────────────────────────────────────────────────────────────────
-Processed 39111 bytes, 0.039 megabytes (SI)
+Processed 47143 bytes, 0.047 megabytes (SI)
 ───────────────────────────────────────────────────────────────────────────────
 ```
 

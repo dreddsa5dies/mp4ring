@@ -26,8 +26,8 @@ func Test_getHeaderBoxInfo(t *testing.T) {
 		wantBoxHeader boxHeader
 		wantErr       bool
 	}{
-		{name: "ftyp", args: args{[]byte(ft + mv + r)}, wantBoxHeader: boxHeader{Size: 538976288, FourccType: [4]byte{102, 116, 121, 112}}, wantErr: false},
-		{name: "moov", args: args{[]byte(mv + ft + r)}, wantBoxHeader: boxHeader{Size: 538976288, FourccType: [4]byte{109, 111, 111, 118}}, wantErr: false},
+		{name: "ftyp", args: args{[]byte(ft + mv + r)}, wantBoxHeader: boxHeader{Size: 538976288, FourccType: [4]byte{102, 116, 121, 112}, Size64: 7598539510785253408}, wantErr: false},
+		{name: "moov", args: args{[]byte(mv + ft + r)}, wantBoxHeader: boxHeader{Size: 538976288, FourccType: [4]byte{109, 111, 111, 118}, Size64: 2314885858533468260}, wantErr: false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -68,7 +68,7 @@ func TestBuffer_Close(t *testing.T) {
 		buf     *Buffer
 		wantErr bool
 	}{
-		{name: "ok", buf: &Buffer{ftyp: []byte(ft), moov: []byte(mv), r: ring.New(1), size: 100, isClosed: false}, wantErr: false},
+		{name: "ok", buf: &Buffer{ftyp: []byte(ft), moov: []byte(mv), r: ring.New(1), size: 0, isClosed: false}, wantErr: false},
 		{name: "nil", buf: nil, wantErr: true},
 	}
 	for _, tt := range tests {
@@ -98,7 +98,30 @@ func TestBuffer_Write(t *testing.T) {
 		want    int
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{name: "closed",
+			fields:  fields{ftyp: []byte{}, moov: []byte{}, r: ring.New(1), size: 0, isClosed: true},
+			args:    args{[]byte(r)},
+			want:    0,
+			wantErr: true,
+		},
+		{name: "ftyp",
+			fields:  fields{ftyp: []byte{}, moov: []byte{}, r: ring.New(1), size: 0, isClosed: false},
+			args:    args{[]byte(ft)},
+			want:    32,
+			wantErr: false,
+		},
+		{name: "moov",
+			fields:  fields{ftyp: []byte{}, moov: []byte{}, r: ring.New(1), size: 0, isClosed: false},
+			args:    args{[]byte(mv)},
+			want:    682,
+			wantErr: false,
+		},
+		{name: "other",
+			fields:  fields{ftyp: []byte{}, moov: []byte{}, r: ring.New(1), size: 0, isClosed: false},
+			args:    args{[]byte(r)},
+			want:    118,
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -122,10 +145,14 @@ func TestBuffer_Write(t *testing.T) {
 }
 
 func TestBuffer_Bytes(t *testing.T) {
+	rr := ring.New(1)
+
+	rr.Value = []byte(r)
+
 	type fields struct {
 		ftyp     []byte
 		moov     []byte
-		r        *ring.Ring
+		ri       *ring.Ring
 		size     int64
 		isClosed bool
 	}
@@ -134,14 +161,14 @@ func TestBuffer_Bytes(t *testing.T) {
 		fields fields
 		want   []byte
 	}{
-		// TODO: Add test cases.
+		{name: "ok", fields: fields{ftyp: []byte(ft), moov: []byte(mv), ri: rr, size: 0, isClosed: false}, want: []byte(ft + mv + r)},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			b := &Buffer{
 				ftyp:     tt.fields.ftyp,
 				moov:     tt.fields.moov,
-				r:        tt.fields.r,
+				r:        tt.fields.ri,
 				size:     tt.fields.size,
 				isClosed: tt.fields.isClosed,
 			}
@@ -153,10 +180,17 @@ func TestBuffer_Bytes(t *testing.T) {
 }
 
 func TestBuffer_Size(t *testing.T) {
+	rr := ring.New(10)
+
+	for i := 0; i < 10; i++ {
+		rr.Value = []byte(r)
+		rr = rr.Next()
+	}
+
 	type fields struct {
 		ftyp     []byte
 		moov     []byte
-		r        *ring.Ring
+		ri       *ring.Ring
 		size     int64
 		isClosed bool
 	}
@@ -165,14 +199,15 @@ func TestBuffer_Size(t *testing.T) {
 		fields fields
 		want   string
 	}{
-		// TODO: Add test cases.
+		{name: "0.70", fields: fields{ftyp: []byte(ft), moov: []byte(mv), ri: ring.New(1), size: 0, isClosed: false}, want: "0.70"},
+		{name: "1.85", fields: fields{ftyp: []byte(ft), moov: []byte(mv), ri: rr, size: 0, isClosed: false}, want: "1.85"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			b := &Buffer{
 				ftyp:     tt.fields.ftyp,
 				moov:     tt.fields.moov,
-				r:        tt.fields.r,
+				r:        tt.fields.ri,
 				size:     tt.fields.size,
 				isClosed: tt.fields.isClosed,
 			}

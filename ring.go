@@ -38,6 +38,7 @@ type Buffer struct {
 type boxHeader struct {
 	Size       uint32
 	FourccType [4]byte
+	Size64     uint64
 }
 
 // getting header information
@@ -95,13 +96,14 @@ func (b *Buffer) Write(buf []byte) (int, error) {
 
 	switch fourccType {
 	case `ftyp`:
-		n = copy(b.ftyp, buf[:bHead.Size])
+		b.ftyp = make([]byte, len(buf))
+		n = copy(b.ftyp, buf)
 	case `moov`:
 		b.moov = make([]byte, len(buf))
-		n = copy(b.moov, buf[:bHead.Size])
+		n = copy(b.moov, buf)
 	default:
 		tmp := make([]byte, len(buf))
-		n = copy(tmp, buf[:bHead.Size])
+		n = copy(tmp, buf)
 		b.r.Value = tmp
 		b.r = b.r.Next()
 	}
